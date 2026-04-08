@@ -1,5 +1,4 @@
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "8"
 import json
 import torch
 import argparse
@@ -23,8 +22,8 @@ def open_text_auto(path):
 # Preprocess
 # ======================================================
 def preprocess_if_needed(data_dir, split, vocab_file, max_len, min_occ):
-    txt_path = os.path.join(data_dir, f'rockyou0-{split}.txt')
-    json_path = os.path.join(data_dir, f'rockyou0-{split}.json')
+    txt_path = os.path.join(data_dir, f'rockyou-{split}.txt')    #File Name
+    json_path = os.path.join(data_dir, f'rockyou-{split}.json')
     vocab_path = os.path.join(data_dir, vocab_file)
 
     if os.path.exists(json_path) and os.path.exists(vocab_path):
@@ -116,16 +115,11 @@ def loss_function(logp, target, length, mean, logv, pad_idx):
 
     return nll + kl, nll.item(), kl.item()
 
-
-# ======================================================
-# Infinite Data Iterator (passGAN-style)
 # ======================================================
 def infinite_loader(loader):
     while True:
         for batch in loader:
             yield batch
-
-
 # ======================================================
 # Train (Iteration-based)
 # ======================================================
@@ -138,12 +132,13 @@ def main(args):
     preprocess_if_needed(args.data_dir, 'valid',
                           args.vocab_file, args.max_sequence_length, args.min_occ)
 
+    #File Name
     train_set = TextDataset(
-        os.path.join(args.data_dir, 'rockyou0-train.json'),
+        os.path.join(args.data_dir, 'rockyou-train.json'), 
         os.path.join(args.data_dir, args.vocab_file)
     )
     valid_set = TextDataset(
-        os.path.join(args.data_dir, 'rockyou0-valid.json'),
+        os.path.join(args.data_dir, 'rockyou-valid.json'),
         os.path.join(args.data_dir, args.vocab_file)
     )
 
@@ -170,7 +165,7 @@ def main(args):
         max_sequence_length=args.max_sequence_length
     ).to(device)
     
-        # ===== 파라미터 수 출력 =====
+        # ===== Print Parameters =====
     total_params = sum(p.numel() for p in model.parameters())
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
@@ -251,7 +246,7 @@ def main(args):
 
             print(f"[Validation @ {global_step}] NLL={val_nll:.4f} KL={val_kl:.4f}")
             
-            # ===== Validation 기준 best =====
+            # ===== Validation best =====
             val_total_loss = val_nll + val_kl
 
             if val_total_loss < best_total_loss:
@@ -264,8 +259,7 @@ def main(args):
                 print(f"[BEST (VAL) UPDATE @ {global_step}] "
                     f"TOTAL={best_total_loss:.4f} "
                     f"NLL={best_nll:.4f} KL={best_kl:.4f}")
-
-                # best 모델 따로 저장
+ 
                 torch.save(
                     model.state_dict(),
                     os.path.join(args.save_dir, "best_model.pt")
@@ -294,8 +288,8 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--data_dir', default='./data')
-    parser.add_argument('--vocab_file', default='rockyou0-vocab.json')
+    parser.add_argument('--data_dir', default='./data')  
+    parser.add_argument('--vocab_file', default='rockyou-vocab.json') 
     parser.add_argument('--embedding_size', type=int, default=300)
     parser.add_argument('--hidden_size', type=int, default=256)
     parser.add_argument('--latent_size', type=int, default=64)
@@ -311,7 +305,7 @@ if __name__ == "__main__":
     parser.add_argument('--log_every', type=int, default=1000)
     parser.add_argument('--save_every', type=int, default=5000)
 
-    parser.add_argument('--save_dir', default='./rockyou1')
+    parser.add_argument('--save_dir', default='./rockyou')
     args = parser.parse_args()
 
     main(args)
