@@ -1,5 +1,4 @@
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "9"
 import json, torch, argparse, time
 from model import PassDNVAE
 
@@ -47,17 +46,17 @@ def main(args):
                 f.write( idx2str(s,i2w,pad,sos,eos)+"\n" )
                 total_generated+=1
 
-    print(f" 완료! 총 {total_generated:,} 개 생성")
-    print(f" 소요: {time.time()-start:.2f} sec")
+    print(f" Finish! Total password generation {total_generated:,}")
+    print(f" During: {time.time()-start:.2f} sec")
 
 
 if __name__=="__main__":
     parser=argparse.ArgumentParser()
     parser.add_argument('--data_dir',default='./data')
-    parser.add_argument('--vocab_file',default='rockyou0-vocab.json')  #4iq-4class8-20%-vocab
+    parser.add_argument('--vocab_file',default='rockyou-vocab.json')  #4iq-4class8-20%-vocab
 
     parser.add_argument('--model_path',default='./rockyou0/best_model.pt')     
-    parser.add_argument('--output_file',default='./PassDNVAE_ro_1000M.txt')
+    parser.add_argument('--output_file',default='./PassDNVAE_10M.txt')
     parser.add_argument('--num_samples',type=int,default=10000) 
     parser.add_argument('--repeat',type=int,default=100000)       
 
