@@ -31,10 +31,6 @@ class DenseBlock(nn.Module):
             features.append(out)
         return torch.cat(features, dim=1)
 
-
-# ======================================================
-# PassDNVAE (temperature 제거 버전)
-# ======================================================
 class PassDNVAE(nn.Module):
     def __init__(
         self,
