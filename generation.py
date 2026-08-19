@@ -304,10 +304,10 @@ if __name__ == "__main__":
         default="/path/directory",
     )
     
-    #Vocabulary file path
+    #Vocabulary file name
     parser.add_argument(
         "--vocab_file",
-        default="/path/directory",
+        default="/vocab file name",
     )
 
     #Trained model file path
@@ -369,7 +369,7 @@ if __name__ == "__main__":
         type=float,
         default=0.1,
     )
-
+# Must be the same value used during model training
     parser.add_argument(
         "--max_sequence_length",
         type=int,
